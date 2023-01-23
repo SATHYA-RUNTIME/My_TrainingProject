@@ -28,7 +28,8 @@ import com.example.convertdoctorapp.entity.Appointment;
 import com.example.convertdoctorapp.entity.Doctortable;
 import com.example.convertdoctorapp.entity.Patient;
 import com.example.convertdoctorapp.ropository.Datajparepo;
-import com.example.convertdoctorapp.ropository.Doctorrepo;
+// import com.example.convertdoctorapp.ropository.doctorservice;
+import com.example.convertdoctorapp.service.Doctorservice;
 // import com.google.gson.Gson;
 import com.google.gson.Gson;
 
@@ -38,27 +39,24 @@ public class Homecontrol {
     @Autowired
     Datajparepo datajparepo;
 
+    // @Autowired
+    // Doctorrepo doctorservice;
+
     @Autowired
-    Doctorrepo doctorrepo;
+    Doctorservice doctorservice; 
 
     @RequestMapping("/insertpatient")
     public String insertpatient(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("finalguy" + request.getParameter("Address11"));
-        // Patient pt=new Patient(0, request.getParameter("Address"), 879876755,
-        // request.getParameter("Mail"), request.getParameter("Patient_name"),
-        // request.getParameter("Password"));
-        // System.out.println("finalguyfinesh");
-        // datajparepo.save(pt);
+        System.out.println("finalguy" + request.getParameter("Address11"));      
         System.out.println("finalguycompleted");
         return "Login";
     }
 
     @RequestMapping("/")
     public String getmail(HttpServletRequest request, HttpServletResponse response) {
-        // HttpSession session1 = request.getSession();
+      
         return "Login";
-        // return datajparepo.findmail(1);
-        // return session1.getAttribute("checkmyname");
+       
     }
 
     @RequestMapping("/app")
@@ -73,7 +71,6 @@ public class Homecontrol {
     
     @RequestMapping("/makeapp2")
     public void makeapp2(HttpServletRequest request, HttpServletResponse response){
-       
         Appointment appo= new Appointment();
         appo.setAppid(0);
         appo.setPatientid(request.getParameter("p_id"));
@@ -81,7 +78,7 @@ public class Homecontrol {
         appo.setHID(Integer.parseInt(request.getParameter("h_id")));
         appo.setAPPDATE(request.getParameter("date"));
         appo.setStatus(0);
-        doctorrepo.save(appo);
+        doctorservice.saveappoiment(appo);
     }
 
     @RequestMapping("/datecheck")
@@ -95,7 +92,7 @@ public class Homecontrol {
         if (request.getParameter("u_name").charAt(0) == 'D'
                 && request.getParameter("u_name").charAt(request.getParameter("u_name").length() - 1) == 'r') {
 
-            if (datajparepo.findByUsernamePasswordforD(request.getParameter("u_name"),
+            if (doctorservice.findByUsernamePasswordforD(request.getParameter("u_name"),
                    Integer.parseInt(request.getParameter("passwd")) ) != null) {
                 System.out.println("welcome");
                 HttpSession session = request.getSession();
@@ -113,7 +110,7 @@ public class Homecontrol {
             }
         } else {
 
-            if (datajparepo.findByUsernamePassword(request.getParameter("u_name"),
+            if (doctorservice.findByUsernamePassword(request.getParameter("u_name"),
                     request.getParameter("passwd")) != null) {
                 System.out.println("welcome");
                 HttpSession session = request.getSession();
@@ -168,11 +165,11 @@ public class Homecontrol {
      }
      @RequestMapping("/makeapp")
      public void makeapp(@RequestParam("message") String message){
-        // doctorrepo.updateappo();
+        // doctorservice.updateappo();
         System.out.println("dfgs"+message);
-        Appointment ap= doctorrepo.findByAppid(Integer.parseInt(message));
+        Appointment ap= doctorservice.findByAppid(Integer.parseInt(message));
         ap.setStatus(1);
-        doctorrepo.save(ap);
+        doctorservice.saveappoiment(ap);
         System.out.println("successfully updated");
 
 
@@ -186,9 +183,9 @@ public class Homecontrol {
          Gson g= new Gson();
          HttpSession session = req.getSession();
          int t=(int) session.getAttribute("goldenid");  
-         System.out.println("fgd"+doctorrepo.findByDID(t));         
-         System.out.println(session.getAttribute("goldenid")+"iamhere"+doctorrepo.findByDID(t));
-         return ResponseEntity.ok(g.toJson(doctorrepo.findByDID(t)));   
+         System.out.println("fgd"+doctorservice.findByDID(t));         
+         System.out.println(session.getAttribute("goldenid")+"iamhere"+doctorservice.findByDID(t));
+         return ResponseEntity.ok(g.toJson(doctorservice.findByDID(t)));   
       }
       @RequestMapping("/showstatus")
       public ResponseEntity<String> showstatus(HttpServletRequest req,HttpServletResponse res){
@@ -197,7 +194,7 @@ public class Homecontrol {
         System.out.println("funby"+session.getAttribute("goldenpatientid")+t);
         Gson g= new Gson();
          
-        return ResponseEntity.ok(g.toJson(doctorrepo.findByPatientid(String.valueOf(session.getAttribute("goldenpatientid")))));  
+        return ResponseEntity.ok(g.toJson(doctorservice.findByPatientid(String.valueOf(session.getAttribute("goldenpatientid")))));  
       }
 
     //   @GetMapping("/myapi2")     
@@ -212,12 +209,6 @@ public class Homecontrol {
         Gson g= new Gson();
          return ResponseEntity.ok(g.toJson(datajparepo.findByDoctorname()));      
         
-      }
-      @PostMapping("/servdate")
-      public ResponseEntity<String> checkdate(){
-        Gson g= new Gson();
-        return ResponseEntity.ok(g.toJson(datajparepo.finddocdate()));
-
       }
       
 }
